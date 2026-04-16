@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ventas</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        .page-wrapper { display: flex; flex: 1; }
+        .ad-sidebar {
+          width: 160px; min-width: 160px; display: flex; flex-direction: column;
+          gap: 12px; padding: 16px 8px; background: #f0fffe; position: sticky; top: 0; height: 100vh;
+        }
+        .ad-sidebar img { width: 100%; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+        .content-area { flex: 1; overflow: auto; }
+        #tab-home { padding: 20px; }
+        .banner-box {
+          background: #37bfaf; border: 1px solid #024d48;
+          display: flex; justify-content: center; align-items: center;
+          padding: 20px; margin-bottom: 20px; min-height: 200px;
+        }
+        .banner-box img { max-width: 100%; max-height: 280px; object-fit: contain; }
+        .welcome-card { background: #37bfaf; border: 1px solid #024d48; padding: 15px; }
+        .welcome-card h3 { margin-bottom: 8px; font-size: 14px; color: #011e35; }
+        .welcome-card p { color: #011e35; font-size: 13px; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Ventas</h1>
+    <nav>
+        <button class="active" onclick="showTab('home', this)">Home</button>
+        <button onclick="showTab('clientes', this)">Clientes</button>
+        <button onclick="showTab('productos', this)">Productos</button>
+        <button onclick="showTab('ventas', this)">Ventas</button>
+        <button th:if="${rolUsuario == 'ADMIN'}" onclick="showTab('usuarios', this)">Usuarios</button>
+        <button th:if="${rolUsuario == 'ADMIN'}" onclick="showTab('detalles', this)">Detalles</button>
+        <span style="margin-left:auto;padding:6px 12px;color:#011e35;font-size:13px;"
+              th:text="${usuarioLogueado + ' (' + rolUsuario + ')'}"></span>
+        <a href="/login" style="padding:6px 12px;color:#666;text-decoration:none;font-size:13px;">Cerrar sesión</a>
+    </nav>
+</header>
+
+<div class="page-wrapper">
+    <aside class="ad-sidebar">
+        <img th:src="@{/img/anuncio1.png}" alt="Anuncio 1">
+    </aside>
+
+    <div class="content-area">
+        <main style="padding:20px; max-width:900px; margin:auto;">
+
+            <!-- HOME -->
+            <div id="tab-home" class="section active">
+                <div class="banner-box">
+                    <img th:src="@{/img/banner.png}" alt="Banner">
+                </div>
+                <div class="welcome-card">
+                    <h3>Sistema de Ventas</h3>
+                    <p>Selecciona una pestaña del menú para gestionar clientes, productos, ventas y más.</p>
+                </div>
+            </div>
+
+            <!-- CLIENTES -->
+            <div id="tab-clientes" class="section">
+                <div class="section-header"><h2>Clientes</h2></div>
+                <div class="form-card">
+                    <h3>Registrar / Editar</h3>
+                    <input type="hidden" id="cliente-id">
+                    <div class="form-row">
+                        <div class="field"><label>DPI</label><input type="text" id="cliente-dpi"></div>
+                        <div class="field"><label>Nombre</label><input type="text" id="cliente-nombre"></div>
+                        <div class="field"><label>Apellido</label><input type="text" id="cliente-apellido"></div>
+                        <div class="field"><label>Dirección</label><input type="text" id="cliente-direccion"></div>
+                        <div class="field">
+                            <label>Estado</label>
+                            <select id="cliente-estado">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveCliente()">Guardar</button>
+                        <button class="btn btn-ghost" onclick="cancelCliente()">Cancelar</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>DPI</th><th>Nombre</th><th>Apellido</th><th>Dirección</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-clientes"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PRODUCTOS -->
+            <div id="tab-productos" class="section">
+                <div class="section-header"><h2>Productos</h2></div>
+                <div class="form-card">
+                    <h3>Registrar / Editar</h3>
+                    <input type="hidden" id="producto-id">
+                    <div class="form-row">
+                        <div class="field"><label>Nombre</label><input type="text" id="producto-nombre"></div>
+                        <div class="field"><label>Precio</label><input type="number" id="producto-precio"></div>
+                        <div class="field"><label>Stock</label><input type="number" id="producto-stock"></div>
+                        <div class="field">
+                            <label>Estado</label>
+                            <select id="producto-estado">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveProducto()">Guardar</button>
+                        <button class="btn btn-ghost" onclick="cancelProducto()">Cancelar</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-productos"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- USUARIOS (solo ADMIN) -->
+            <div id="tab-usuarios" class="section">
+                <div class="section-header"><h2>Usuarios</h2></div>
+                <div class="form-card">
+                    <h3>Registrar / Editar</h3>
+                    <input type="hidden" id="usuario-id">
+                    <div class="form-row">
+                        <div class="field"><label>Username</label><input type="text" id="usuario-username"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveUsuario()">Guardar</button>
+                        <button class="btn btn-ghost" onclick="cancelUsuario()">Cancelar</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>ID</th><th>Username</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-usuarios"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VENTAS -->
+            <div id="tab-ventas" class="section">
+                <div class="section-header"><h2>Ventas</h2></div>
+                <div class="form-card">
+                    <h3>Registrar / Editar venta</h3>
+                    <input type="hidden" id="venta-id">
+                    <div class="form-row">
+                        <div class="field"><label>DPI Cliente</label><input type="text" id="venta-cliente"></div>
+                        <div class="field"><label>Cód. Usuario</label><input type="text" id="venta-usuario"></div>
+                        <div class="field"><label>Total</label><input type="number" id="venta-total"></div>
+                        <div class="field"><label>Fecha</label><input type="date" id="venta-fecha"></div>
+                        <div class="field">
+                            <label>Estado</label>
+                            <select id="venta-estado">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveVenta()">Guardar</button>
+                        <button class="btn btn-ghost" onclick="cancelVenta()">Cancelar</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>ID</th><th>Cliente</th><th>Usuario</th><th>Fecha</th><th>Total</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-ventas"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DETALLES (solo ADMIN) -->
+            <div id="tab-detalles" class="section">
+                <div class="section-header"><h2>Detalles</h2></div>
+                <div class="form-card">
+                    <h3>Agregar / Editar detalle</h3>
+                    <input type="hidden" id="detalle-id">
+                    <div class="form-row">
+                        <div class="field"><label>Cód. Venta</label><input type="text" id="detalle-venta"></div>
+                        <div class="field"><label>Cód. Producto</label><input type="text" id="detalle-producto"></div>
+                        <div class="field"><label>Cantidad</label><input type="number" id="detalle-cantidad"></div>
+                        <div class="field"><label>Precio Unitario</label><input type="number" id="detalle-precio"></div>
+                        <div class="field"><label>Subtotal</label><input type="number" id="detalle-subtotal"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveDetalle()">Guardar</button>
+                        <button class="btn btn-ghost" onclick="cancelDetalle()">Cancelar</button>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>ID</th><th>Venta</th><th>Producto</th><th>Cantidad</th><th>P. Unitario</th><th>Subtotal</th><th>Acciones</th></tr></thead>
+                        <tbody id="tbody-detalles"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <aside class="ad-sidebar">
+        <img th:src="@{/img/anuncio2.png}" alt="Anuncio 2">
+    </aside>
+</div>
+
+<script th:inline="javascript">
+    const ROL_USUARIO = /*[[${rolUsuario}]]*/ 'USER';
+</script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
