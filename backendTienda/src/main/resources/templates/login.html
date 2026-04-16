@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Sistema de Ventas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { height: 100vh; background: #f4f3ef; display: flex; justify-content: center; align-items: center; }
+        .login-container {
+          background: white;
+          border: 1px solid #ccc;
+          padding: 40px;
+          width: 320px;
+          text-align: center;
+        }
+        .login-container h2 { font-size: 16px; color: #1a1917; margin-bottom: 20px; font-weight: 600; }
+        .input-group { margin-bottom: 12px; text-align: left; }
+        .input-group label { font-size: 12px; color: #666; display: block; margin-bottom: 3px; }
+        .input-group input { width: 100%; padding: 6px; border: 1px solid #ccc; font-size: 14px; }
+        .input-group input:focus { outline: none; border-color: #2a5fff; }
+        button {
+          width: 100%; padding: 8px; border: none;
+          background: #2a5fff; color: white;
+          font-weight: bold; cursor: pointer; font-size: 14px;
+        }
+        button:hover { background: #1a4fe0; }
+        .error { color: red; font-size: 12px; margin-bottom: 10px; }
+        .footer-text { margin-top: 15px; font-size: 11px; color: #999; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>Sistema de Ventas</h2>
+    <form th:action="@{/login}" method="post">
+        <p class="error" th:if="${error}" th:text="${error}"></p>
+        <div class="input-group">
+            <label>Usuario</label>
+            <input type="text" name="usuario" placeholder="usuario" required>
+        </div>
+        <div class="input-group">
+            <label>Contraseña</label>
+            <input type="password" name="password" placeholder="contraseña" required>
+        </div>
+        <button type="submit">Ingresar</button>
+
+    </form><a class="link" th:href="@{/register}">No tengo cuenta, crear una</a>
+    <div class="footer-text">○ 2026 SKIBIDIS</div>
+</div>
+</body>
+</html>html>
