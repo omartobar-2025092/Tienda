@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Cleanup;
 
 @Entity
-@Table (name = "Clientes")
+@Table (name = "clientes")
 
 public class Clientes {
 
@@ -47,3 +47,4 @@ public class Clientes {
 
     public void setEstado(Integer estado) {this.estado = estado;}
 }
+

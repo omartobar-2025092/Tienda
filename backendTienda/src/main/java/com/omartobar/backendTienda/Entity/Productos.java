@@ -3,7 +3,7 @@ package com.omartobar.backendTienda.Entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Productos")
+@Table(name = "productos")
 
 public class Productos {
 
