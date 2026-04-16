@@ -39,9 +39,6 @@ public class UsuariosServiceImplements implements UsuariosService {
             Usuarios newUsuario = usuarioExistente.get();
             newUsuario.setUsername(usuario.getUsername());
             newUsuario.setPasword(usuario.getPasword());
-            newUsuario.setEmail(usuario.getEmail());
-            newUsuario.setRol(usuario.getRol());
-            newUsuario.setEstado(usuario.getEstado());
 
             return usuariosRepository.save(newUsuario);
         } else {
